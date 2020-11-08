@@ -70,6 +70,7 @@ return [
                for($i = 0; $i < $size; $i++){
                    $current = $aux2[$i];
                 if ($creditos > 0) {
+                    if ($aux2[$i]->creditos > 0) {
                     if ($aux2[$i]->creditos >= $creditos) {
                         $aux2[$i]->creditos = $aux2[$i]->creditos - $creditos;
                         array_push($aux, $aux2[$i]);
@@ -84,6 +85,7 @@ return [
                         array_push($aux, $aux2[$i]);
                         array_push($ids, $aux2[$i]->id);
                      }
+                    }
                 }
             }
 
@@ -110,65 +112,67 @@ return [
             // ]);
         }
     ],
-    '/regresar-creditos' => [
-        'method' => 'PATCH',
-        'handler' => function (Request $request, Response $response) {
-            $body = $request->getParsedBody();
-            $container = \Directus\Application\Application::getInstance()->getContainer();
-            $dbConnection = $container->get('database');
-            $tableGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
+        '/regresar-creditos' => [
+            'method' => 'PATCH',
+            'handler' => function (Request $request, Response $response) {
+                $body = $request->getParsedBody();
+                $container = \Directus\Application\Application::getInstance()->getContainer();
+                $dbConnection = $container->get('database');
+                $tableGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
 
-            $params = $request->getQueryParams();
-            $totales = $body["creditos"];
-            $where = new Zend\Db\Sql\Where;
-            $where->greaterThanOrEqualTo('vigencia', $params['desde']);
-            $where->equalTo('cliente', $params['cliente']);
+                $params = $request->getQueryParams();
+                $totales = $body["creditos"];
+                $where = new Zend\Db\Sql\Where;
+                $where->greaterThanOrEqualTo('vigencia', $params['desde']);
+                $where->equalTo('cliente', $params['cliente']);
 
-            $select = $tableGateway->select($where);
-            $creditos = $params['creditos'];
-            $total = 0;
-            $res = false;
-            $size = count($select);
-            // $aux = null;
-            $aux = array();
-            $aux2 = array();
-            $aux3 = array();
-            foreach ($select as $cu) {
-                array_push($aux, $cu);
-            }
+                $select = $tableGateway->select($where);
+                $creditos = $params['creditos'];
+                $total = 0;
+                $res = false;
+                $size = count($select);
+                // $aux = null;
+                $aux = array();
+                $aux2 = array();
+                $aux3 = array();
+                foreach ($select as $cu) {
+                    array_push($aux, $cu);
+                }
 
-            foreach($totales as $c) {
-                array_push($aux2, $c);
-            }
+                foreach($totales as $c) {
+                    array_push($aux2, $c);
+                }
 
-            foreach($aux as $p){
-                $a["cantidad"] = 0;
-                foreach($aux2 as $t){
-                    if ($t["paquete"] == $p["id"]) {
-                        if ($a["cantidad"] == 0) {
-                        $a["cantidad"] += ($t["cantidad"] + $p["creditos"]);
+                foreach($aux as $p){
+                    $a["cantidad"] = 0;
+                    foreach($aux2 as $t){
+                        if ($t["paquete"] == $p["id"]) {
+                            if ($a["cantidad"] == 0) {
+                            $a["cantidad"] += ($t["cantidad"] + $p["creditos"]);
+                            }
+                            else {
+                                $a["cantidad"] += $t["cantidad"];
+                            }
+                            $a["paquete"] = $p["id"];                        
                         }
-                        else {
-                            $a["cantidad"] += $t["cantidad"];
-                        }
-                        $a["paquete"] = $p["id"];                        
+                    }
+                    if ($a["cantidad"] > 0) {
+                    array_push($aux3, $a);
                     }
                 }
-                array_push($aux3, $a);
-            }
 
-            foreach($aux3 as $a) {
-                $rows= $tableGateway->update(
-                    array("creditos" => $a["cantidad"]),
-                    array("id" => $a["paquete"])
-                );
+                foreach($aux3 as $a) {
+                    $rows= $tableGateway->update(
+                        array("creditos" => $a["cantidad"]),
+                        array("id" => $a["paquete"])
+                    );
+                }
+                if ($rows > 0) {
+                    $res = true;
+                }
+                return $response->withJson(['resultado' => $aux3, 'aux' => $aux]);
             }
-            if ($rows > 0) {
-                $res = true;
-            }
-             return $response->withJson(['resultado' => $aux3, 'aux' => $aux]);
-        }
-    ],
+        ],
     '/pagar' => [
         'method' => 'POST',
         'handler' => function (Request $request, Response $response) {

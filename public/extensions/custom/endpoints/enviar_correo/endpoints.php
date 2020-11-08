@@ -14,7 +14,7 @@ return [
             // $message .= 'Comienza a reservar tus clases www.beatstudio.com.mx';                    
             $headers = "MIME-Version: 1.0" . "\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= 'From: notify.beatstudio@gmail.com' . "\r\n";
+            $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
 
             $message = '<!DOCTYPE html>';
             $message.= '<html lang="en">';
@@ -74,7 +74,7 @@ return [
             $message.= '<img class="logo" src="https://www.beatstudio.com.mx/assets/img/correos/BeatStudio_Logo-01.svg" alt="BeatStudio">';
             $message.= '</div>';
             $message.= '<div class="col-6 d-flex justify-content-end">';
-            $message.= '<span class="align-self-center">14 de Octubre del 2020</span>';
+            //      $message.= '<span class="align-self-center">14 de Octubre del 2020</span>';
             $message.= '</div>';
             $message.= '<div class="col-12">';
             $message.= '<h1 class="text-center mt-5">¡Felicidades!</h1>';
@@ -123,7 +123,7 @@ return [
             $fecha = strtotime($paquete['vigencia']);
             $headers = "MIME-Version: 1.0" . "\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= 'From: notify.beatstudio@gmail.com' . "\r\n";
+            $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
 
             // $message = "Haz realizado una compra en www.beatstudio.com.mx por " . $paquete["creditos"] . " créditos, ";
             // $message.= "por un total de $" . $paquete["precio"] . ", con vigencia de " . $paquete["vigenciaDias"];
@@ -188,12 +188,12 @@ return [
             $message.= '<img class="logo" src="https://www.beatstudio.com.mx/assets/img/correos/BeatStudio_Logo-01.svg" alt="BeatStudio">';
             $message.= '</div>';
             $message.= '<div class="col-6 d-flex justify-content-end">';
-            $message.= '<span class="align-self-center">14 de Octubre del 2020</span>';
+            // $message.= '<span class="align-self-center">14 de Octubre del 2020</span>';
             $message.= '</div>';
             $message.= '<div class="col-12">';
             $message.= '<h1 class="text-center mt-5">¡Gracias por tu compra!</h1>';
-            $message.= '<p class="mt-5">Se ha realizado una compra de' . $paquete["creditos"] .' <span>BeatSpin</span> desde tu cuenta';
-            $message.= 'BeatStudio, Gracias';
+            $message.= '<p class="mt-5">Se ha realizado una compra de ' . $paquete["creditos"] .' créditos desde tu cuenta';
+            $message.= ' BeatStudio, Gracias';
             $message.= ' por ';
             $message.= 'tu preferencia.</p>';
             $message.= '</div>';
@@ -237,7 +237,7 @@ return [
             $where = new Zend\Db\Sql\Where;
 
              $reservacion = $body['reservacion'];
-            //$horario = $body['horario'];
+            $horario = $body['horario'];
             $coach = $body['coach'];
             $disciplina = $body['disciplina'];
             $fecha = strtotime($horario['fecha']);
@@ -341,7 +341,7 @@ return [
             $message.= 'Día';
             $message.= '</div>';
             $message.= '<div class="col-6">';
-            $message.= '14/10/2020';
+            $message.= date('d/m/Y', $fecha);
             $message.= '</div>';
             $message.= '</div>';
             $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
@@ -349,7 +349,7 @@ return [
             $message.= 'Hora';
             $message.= '</div>';
             $message.= '<div class="col-6">';
-            $message.= '15:30';
+            $message.= date('h:i A', $fecha);
             $message.= '</div>';
             $message.= '</div>';
             $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
@@ -520,7 +520,7 @@ return [
 
             $message.= '</html>';
 
-            mail($res, $subject, $message, $headers);
+            //mail($res, $subject, $message, $headers);
             
             return $response->withJson([
                 'disciplina' => $message
@@ -639,6 +639,12 @@ return [
         'method' => 'POST',
         'handler' => function(Request $request, Response $response) {
             $body = $request->getParsedBody();
+            $reservacion = $body['reservacion'];
+            //$horario = $body['horario'];
+            $coach = $body['coach'];
+            $disciplina = $body['disciplina'];
+            $fecha = strtotime($horario['fecha']);
+            $detalles = $body['detalles'];
             $email = $body["email"];
             $to = $body["email"];
             $subject = 'Cancelación';
@@ -716,6 +722,69 @@ return [
             $message.= 'tu preferencia.</p>';
             $message.= '</div>';
             $message.= '</div>';
+            
+            $message.= '<div class="col-12">';
+            // $message.= '<h1 class="text-center mt-5">¡Reservación exitosa!</h1>';
+            // $message.= '<p class="mt-5">Se ha registrado una reservación para <span>'. $disciplina['nombre'] .'</span> desde tu cuenta';
+            $message.= 'BeatStudio, Gracias';
+            $message.= ' por ';
+            $message.= 'tu preferencia.</p>';
+            $message.= '</div>';
+            $message.= '<div class="col-12" style="border-top:1px solid #000">';
+            $message.= '<h6 class="mt-5">Detalles de tu cancelación:</h6>';
+            $message.= '</div>';
+            $message.= '</div>';
+            $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
+            $message.= '<div class="col-6 table-title">';
+            $message.= 'Clase';
+            $message.= '</div>';
+            $message.= '<div class="col-6">';
+            $message.= $disciplina['nombre'];
+            $message.= '</div>';
+            $message.= '</div>';
+            $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
+            $message.= '<div class="col-6 table-title">';
+            $message.= 'Día';
+            $message.= '</div>';
+            $message.= '<div class="col-6">';
+            $message.= '14/10/2020';
+            $message.= '</div>';
+            $message.= '</div>';
+            $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
+            $message.= '<div class="col-6 table-title">';
+            $message.= 'Hora';
+            $message.= '</div>';
+            $message.= '<div class="col-6">';
+            $message.= '15:30';
+            $message.= '</div>';
+            $message.= '</div>';
+            $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
+            $message.= '<div class="col-6 table-title">';
+            $message.= 'Coach';
+            $message.= '</div>';
+            $message.= '<div class="col-6">';
+            $message.= $coach["nombre"];
+            $message.= '</div>';
+            $message.= '</div>';
+            $message.= '<div class="row py-2" style="border-bottom:1px solid #eee">';
+            $message.= '<div class="col-6 table-title">';
+            $message.= 'Lugares';
+            $message.= '</div>';
+            $message.= '<div class="col-6">';
+            foreach($detalles as $d) {
+                $message.= '<div>';
+                $message.= $d['lugar'] . ' ' .  $d['nombre'];
+                $message.= '</div>';
+            }      
+            // $message. = '<div>';
+            // $message. = '20 Juan';
+            // $message. = '</div>';
+            // $message. = '<div>';
+            // $message. = '10 Carlos';
+            // $message. = '</div>';
+            $message.= '</div>';
+            $message.= '</div>';
+
             $message.= '<div class="row mt-5" style="border-top: 1px solid #000">';
             $message.= '<div class="col-12  mt-4 d-flex justify-content-center">';
             $message.= '<a class="socials" href="https://www.instagram.com/beatstudiomx/" target="_blank">';

@@ -23,7 +23,8 @@ return [
             "horario" => $r["horario"],
             "status" => $r["status"],
             "cancelada" => $r["cancelada"],
-            "created_on" =>  $date->format('Y-m-d H:i:s')
+            "created_on" =>  $date->format('Y-m-d H:i:s'),
+            "total_personas" => $r["total_personas"]
             ));
             $last = $tableGateway->getLastInsertValue();
             if ($last > 0) {
