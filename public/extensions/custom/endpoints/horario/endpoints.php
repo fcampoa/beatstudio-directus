@@ -10,24 +10,55 @@ return [
 
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
-            $tableGateway = new \Zend\Db\TableGateway\TableGateway('reservacion_detalle', $dbConnection);
-            $params = $request->getQueryParams();
-            // $where = new Zend\Db\Sql\Where;
-            // $where->equalTo('horario', $params['idHorario']);
-            // $where->equalTo('cancelada', false);
-            // $select = $tableGateway->select($where);
+            $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
 
-            $res = $tableGateway->select(function(Select $select) {
-                $select->columns(array('nombre'));
-                $select->where('reservacion.horario', $params['idHorario']);
-                $select->join('reservacion', 'reservacion.id = reservacion_detalle.reservacion', array('horario'));
-            });
+            try {
+                $tableGateway = new \Zend\Db\TableGateway\TableGateway('reservacion_detalle', $dbConnection);
+                $params = $request->getQueryParams();
+                if(sizeof($params) === 0) {
+                    throw new Exception("No se recibieron los parametros solicitados");
+                }
+                else{
+                    if(!isset($params['idHorario']))
+                        throw new Exception("No se recibió el parametro idHorario");
+                }
 
-            $ocupados = count($res);
+                $res = $tableGateway->select(function(Select $select) {
+                    $select->columns(array('nombre'));
+                    $select->where('reservacion.horario', $params['idHorario']);
+                    $select->join('reservacion', 'reservacion.id = reservacion_detalle.reservacion', array('horario'));
+                });
 
-            return $response->withJson([
-                'ocupados' => $ocupados
-            ]);
+                $ocupados = count($res);
+
+                return $response->withJson([
+                    'ocupados' => $ocupados
+                ]);
+            }
+            catch(Throwable  $e){
+                $headers = "MIME-Version: 1.0" . "\r\n";
+                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $message= '<div class="col-12">';
+                $message.= '<p class="mt-5"> Horario: '.$params['idHorario'] ? $params['idHorario'] : "No recibido".'</p>';
+                $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
+                $message.= '<p class="mt-5"> Error: '.$e->getMessage();
+                $message.= '</div>';
+                
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $e->getMessage(), $headers);
+                $errorGateway->insert(array(
+                    "cliente" => $params['idHorario'] ? $params['idHorario'] : 0,
+                    "error" => $e->getMessage(),
+                    "seccion" => "Consulta de horario",
+                    "notified" => $notified ? "Sí" : "No",
+                    "created_on" =>  date('Y-m-d H:i:s')
+                ));
+                
+                return $response->withJson([
+                    'message' => $e->getMessage()
+                ]);
+
+            }
         }
     ]
     ];
