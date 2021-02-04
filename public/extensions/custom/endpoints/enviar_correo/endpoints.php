@@ -435,6 +435,7 @@ return [
                 }
                 $disciplina = $body['disciplina'];
                 $fecha = $body['fecha'] ? $body['fecha'] : " No disponible";
+                $coach = $body['coach'] ? $body['coach'] : " No disponible";
                 
                 $correos = $body['correos'];
                 $to = '';
@@ -509,7 +510,7 @@ return [
                 $message.= '</div>';
                 $message.= '<div class="col-12">';
                 $message.= '<h1 class="text-center mt-5">¡Hay 1 lugar libre!</h1>';
-                $message.= '<p class="mt-5">Se ha desocupado un lugar en la clase de '. $disciplina.' del día '.$fecha.' </p>';
+                $message.= '<p class="mt-5">Se ha desocupado un lugar en la clase de '. $disciplina.' con el '.$coach.' el día '.$fecha.' </p>';
                 $message.= '<p class="mt-5">BeatStudio, Gracias por tu preferencia.</p>';
                 $message.= '</div>';
                 $message.= '</div>';

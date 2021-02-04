@@ -50,7 +50,7 @@ return [
                     $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                     $message.= '</div>';
                     
-                    $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error consulta de historial", $e->getMessage(), $headers);
+                    $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error consulta de historial", $message, $headers);
                     $errorGateway->insert(array(
                         "cliente" => $params['cliente'],
                         "error" => $e->getMessage(),
@@ -164,9 +164,9 @@ return [
                 $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en actualizar creditos", $e->getMessage(), $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en actualizar creditos", $message, $headers);
                 $errorGateway->insert(array(
-                    "cliente" => $params['cliente'],
+                    "cliente" => $params['cliente'] ? $params['cliente'] : 0,
                     "error" => $e->getMessage(),
                     "seccion" => "Actualizar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -274,7 +274,7 @@ return [
                 $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $e->getMessage(), $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $message, $headers);
                 $errorGateway->insert(array(
                     "cliente" => $params['cliente'] ? $params['cliente'] : "No recibido",
                     "error" => $e->getMessage(),
@@ -326,7 +326,7 @@ return [
                 
                 $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $e->getMessage(), $headers);
                 $errorGateway->insert(array(
-                    "cliente" => $body['id'] ? $body['id'] : "No recibido",
+                    "cliente" => $body['id'] ? $body['id'] : 0,
                     "error" => $e->getMessage(),
                     "seccion" => "Regresar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -402,14 +402,14 @@ return [
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$error;
+                $message.= '<p class="mt-5"> Error: '.$error->message;
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $error, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en pago Conekta", $message, $headers);
                 
                 $errorGateway->insert(array(
-                    "cliente" => $cardData['client_name'],
-                    "error" => $error,
+                    "cliente" => 0,
+                    "error" => "Cliente: ".$cardData['client_name'] ? $cardData['client_name']." ".$error : "No recibido. Error:".$error,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
@@ -425,19 +425,18 @@ return [
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$error;
+                $message.= '<p class="mt-5"> Error: '.$error->message;
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $error, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en pago Conekta", $message, $headers);
                 
                 $errorGateway->insert(array(
-                    "cliente" => $cardData['client_name'],
-                    "error" => $error,
+                    "cliente" => 0,
+                    "error" => "Cliente: ".$cardData['client_name'] ? $cardData['client_name']." ".$error : "No recibido. Error:".$error,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
                 ));
-                
                 return $response->withJson([
                     'error' => $error
                 ]);
@@ -448,14 +447,14 @@ return [
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$error;
+                $message.= '<p class="mt-5"> Error: '.$error->message;
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $error, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en pago Conekta", $message, $headers);
                 
                 $errorGateway->insert(array(
-                    "cliente" => $cardData['client_name'],
-                    "error" => $error,
+                    "cliente" => 0,
+                    "error" => "Cliente: ".$cardData['client_name'] ? $cardData['client_name']." ".$error : "No recibido. Error:".$error,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
