@@ -2,6 +2,7 @@
 
 use Directus\Application\Http\Request;
 use Directus\Application\Http\Response;
+use Directus\Util\DateTimeUtils;
 
 require_once __DIR__ . '/../Conekta/lib/Conekta.php';
 
@@ -25,6 +26,7 @@ return [
                         if(!isset($params['cliente']))
                             throw new Exception("No se recibió el parametro cliente");
                     }
+                    
 
                     $where = new Zend\Db\Sql\Where;
                     // $where->between('vigencia', $params['desde'], $params['hasta']);
@@ -35,6 +37,7 @@ return [
                     foreach ($select as $valor) {
                         $creditos += $valor['creditos'];
                     }
+
                     return $response->withJson([
                         'creditos' => $creditos,
                         'message' => "Success"
@@ -53,6 +56,7 @@ return [
                     $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error consulta de historial", $message, $headers);
                     $errorGateway->insert(array(
                         "cliente" => $params['cliente'],
+                        "status" => "published",
                         "error" => $e->getMessage(),
                         "seccion" => "Consulta de historial",
                         "notified" => $notified ? "Sí" : "No",
@@ -139,6 +143,7 @@ return [
                 }
 
                 foreach ($aux as $a) {
+                    
                     $id = $tableGateway->update(
                         array("creditos" => $a["creditos"]),
                         array("id" => $a["id"])
@@ -167,6 +172,7 @@ return [
                 $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en actualizar creditos", $message, $headers);
                 $errorGateway->insert(array(
                     "cliente" => $params['cliente'] ? $params['cliente'] : 0,
+                    "status" => "published",
                     "error" => $e->getMessage(),
                     "seccion" => "Actualizar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -187,6 +193,8 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
+            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
+
             try{
                 $tableGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
 
@@ -220,10 +228,6 @@ return [
                 $where->equalTo('cliente', $params['cliente']);
                 $totales = $body["creditos"];
                 $select = $tableGateway->select($where);
-                $creditos = $params['creditos'];
-                $total = 0;
-                $res = false;
-                $size = count($select);
                 $aux = array();
                 $aux2 = array();
                 $aux3 = array();
@@ -254,6 +258,17 @@ return [
                 }
 
                 foreach($aux3 as $a) {
+                    $activityGateway->insert(array(
+                        'collection' => 'historial_compra',
+                        'action' => 'update',
+                        'action_by' => $params["cliente"] | 0,
+                        'item' => $a["paquete"],
+                        'comment' => "El cliente: ". $params["cliente"] .' se devolvieron '.$a["cantidad"].' al paquete '.$a["paquete"],
+                        'action_on' => DateTimeUtils::now()->toString(),
+                        'ip' => \Directus\get_request_host(),
+                        'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
+                    ));
+
                     $rows= $tableGateway->update(
                         array("creditos" => $a["cantidad"]),
                         array("id" => $a["paquete"])
@@ -277,6 +292,7 @@ return [
                 $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $message, $headers);
                 $errorGateway->insert(array(
                     "cliente" => $params['cliente'] ? $params['cliente'] : "No recibido",
+                    "status" => "published",
                     "error" => $e->getMessage(),
                     "seccion" => "Regresar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -297,6 +313,7 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
+            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
             try{
                 
                 $body = $request->getParsedBody();
@@ -304,6 +321,16 @@ return [
 
                 $fecha_actual = date("Y-m-d");
 
+                $activityGateway->insert(array(
+                    'collection' => 'historial_compra',
+                    'action' => 'create',
+                    'action_by' => $body["cliente"] | 0,
+                    'item' => $body['id'],
+                    'comment' => 'El cliente: '. $body["cliente"]. ' compró el paquete '.$body["paquete"].' por $'.$body["total"].' y vence el día '.date('Y-m-d', strtotime($fecha_actual.'+ '.$body['vigencia_dias'].' days')).' con ID '. $body['id'],
+                    'action_on' => DateTimeUtils::now()->toString(),
+                    'ip' => \Directus\get_request_host(),
+                    'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
+                ));
 
                 $historyGateway->update(
                     array("vigencia" => date("Y-m-d", strtotime($fecha_actual."+ ".$body['vigencia_dias']." days"))),
@@ -327,6 +354,7 @@ return [
                 $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $e->getMessage(), $headers);
                 $errorGateway->insert(array(
                     "cliente" => $body['id'] ? $body['id'] : 0,
+                    "status" => "published",
                     "error" => $e->getMessage(),
                     "seccion" => "Regresar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -353,47 +381,13 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
+            
 
             try {
-                $customer = \Conekta\Customer::create(
-                    [
-                        'name'  => $cardData['client_name'],
-                        'email' => $cardData['client_email'],
-                        'phone' => $cardData['client_phone'],
-                        'payment_sources' => [
-                            [
-                                'token_id' => $cardData['card_token'],
-                                'type' => "card"
-                            ]
-                        ]
-                    ]
-                );
-
-                $order = \Conekta\Order::create(
-                    [
-                        'currency' => 'MXN',
-                        'customer_info' => [
-                            'customer_id' => $customer['id']
-                        ],
-                        'line_items' => [
-                            [
-                                'name' => $cardData['item'],
-                                'unit_price' => $cardData['amount'] * 100,
-                                'quantity' => 1
-                            ]
-                        ],
-                        'charges' => [
-                            [
-                                'payment_method' => [
-                                    'type' => 'default'
-                                ]
-                            ]
-                        ]
-                    ]
-                );
+                
 
                 return $response->withJson([
-                    'resultado' => $order['id']
+                    'resultado' => "asdfghj"
                 ]);
             } catch (\Conekta\ProccessingError $error) {
                 $headers = "MIME-Version: 1.0" . "\r\n";
@@ -409,7 +403,8 @@ return [
                 
                 $errorGateway->insert(array(
                     "cliente" => 0,
-                    "error" => "Cliente: ".$cardData['client_name'] ? $cardData['client_name']." ".$error : "No recibido. Error:".$error,
+                    "status" => "published",
+                    "error" => $cardData['client_name'].", error : ".$error->message,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
@@ -432,7 +427,8 @@ return [
                 
                 $errorGateway->insert(array(
                     "cliente" => 0,
-                    "error" => "Cliente: ".$cardData['client_name'] ? $cardData['client_name']." ".$error : "No recibido. Error:".$error,
+                    "status" => "published",
+                    "error" => $cardData['client_name'].", error : ".$error->message ,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
@@ -454,7 +450,8 @@ return [
                 
                 $errorGateway->insert(array(
                     "cliente" => 0,
-                    "error" => "Cliente: ".$cardData['client_name'] ? $cardData['client_name']." ".$error : "No recibido. Error:".$error,
+                    "status" => "published",
+                    "error" => $cardData['client_name'].", error : ".$error->message,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')

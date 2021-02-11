@@ -2,6 +2,7 @@
 
 use Directus\Application\Http\Request;
 use Directus\Application\Http\Response;
+use Directus\Util\DateTimeUtils;
 
 return [
     '/agregar' => [
@@ -10,6 +11,7 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
+            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
 
             try {
                 $body = $request->getParsedBody();
@@ -37,8 +39,20 @@ return [
                     "created_on" =>  $date->format('Y-m-d H:i:s'),
                     "total_personas" => $r["total_personas"]
                 ));
+                
                 $last = $tableGateway->getLastInsertValue();
                 if ($last > 0) {
+                    $activityGateway->insert(array(
+                        'collection' => 'transaction_activity',
+                        'action' => 'create',
+                        'action_by' => $r["cliente"] | 0,
+                        'item' => $last,
+                        'comment' => "El cliente: ". $r["cliente"] .'reservó la clase '.$detalles[0]["nombre"].' del día '.$date->format('Y-m-d H:i:s').' para '.$r["total_personas"].' personas con el paquete ' . $detalles[0]["paquete"],
+                        'action_on' => DateTimeUtils::now()->toString(),
+                        'ip' => \Directus\get_request_host(),
+                        'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
+                    ));
+                    
                     $tableGateway = new \Zend\Db\TableGateway\TableGateway('reservacion_detalle', $dbConnection);
                     foreach ($detalles as $d) {
                     $res = $tableGateway->insert(array(
