@@ -384,10 +384,45 @@ return [
             
 
             try {
-                
+                $customer = \Conekta\Customer::create(
+                    [
+                        'name'  => $cardData['client_name'],
+                        'email' => $cardData['client_email'],
+                        'phone' => $cardData['client_phone'],
+                        'payment_sources' => [
+                            [
+                                'token_id' => $cardData['card_token'],
+                                'type' => "card"
+                            ]
+                        ]
+                    ]
+                );
+
+                $order = \Conekta\Order::create(
+                    [
+                        'currency' => 'MXN',
+                        'customer_info' => [
+                            'customer_id' => $customer['id']
+                        ],
+                        'line_items' => [
+                            [
+                                'name' => $cardData['item'],
+                                'unit_price' => $cardData['amount'] * 100,
+                                'quantity' => 1
+                            ]
+                        ],
+                        'charges' => [
+                            [
+                                'payment_method' => [
+                                    'type' => 'default'
+                                ]
+                            ]
+                        ]
+                    ]
+                );
 
                 return $response->withJson([
-                    'resultado' => "asdfghj"
+                    'resultado' => $order['id']
                 ]);
             } catch (\Conekta\ProccessingError $error) {
                 $headers = "MIME-Version: 1.0" . "\r\n";
