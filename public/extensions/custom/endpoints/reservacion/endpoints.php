@@ -12,8 +12,6 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
-            $scheduleGateway = new \Zend\Db\TableGateway\TableGateway('horario', $dbConnection);
 
             try {
                 $body = $request->getParsedBody();
@@ -42,45 +40,10 @@ return [
                     "created_on" =>  $date->format('Y-m-d H:i:s'),
                     "total_personas" => $r["total_personas"]
                 ));
-                $where = new Zend\Db\Sql\Where;
-                $wherediscipline = new Zend\Db\Sql\Where;
-                $wherePayment = new Zend\Db\Sql\Where;
-                
-                    // $where->between('vigencia', $params['desde'], $params['hasta']);
-                    
-                $disciplineGateway = new \Zend\Db\TableGateway\TableGateway('disciplina', $dbConnection);
-                $paymentsGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
-
-                $where->equalTo('id', (int)$r["horario"]);
-                $schedules = $scheduleGateway->select($where);
-               
-                $scheduleResult = $schedules->current();
-                $wherediscipline->equalTo('id', (int)$scheduleResult["disciplina"]);
-                $disciplines = $disciplineGateway->select($wherediscipline);
-                $disciplineResult = $disciplines->current();
 
 
                 $last = $tableGateway->getLastInsertValue();
                 if ($last > 0) {
-                    $current_date = date("Y-m-d");
-                    $wherePayment->greaterThanOrEqualTo('vigencia', date('Y-m-d', strtotime($current_date)));
-                    $wherePayment->equalTo('cliente', (int)$r["cliente"]);
-                    $payments = $paymentsGateway->select($wherePayment);
-                    $credits = 0;
-                    foreach ($payments as $cu) {
-                        $credits = $credits + $cu["creditos"];
-                    }
-                    $activityGateway->insert(array(
-                        'collection' => 'reservacion',
-                        'action' => 'create',
-                        'action_by' => $r["cliente"] ? $r["cliente"] : 0,
-                        'item' => $last,
-                        'comment' => $detalles[0]["nombre"].' reservó la clase '.$disciplineResult["nombre"].' del día '.$detalles[0]["horario"].' para '.$r["total_personas"].' persona (s) con el paquete ' . $detalles[0]["paquete"]. '. Total de creditos activos: '.$credits,
-                        'action_on' => DateTimeUtils::now()->toString(),
-                        'ip' => \Directus\get_request_host(),
-                        'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
-                    ));
-    
                     
                     $detailGateway = new \Zend\Db\TableGateway\TableGateway('reservacion_detalle', $dbConnection);
                     foreach ($detalles as $d) {

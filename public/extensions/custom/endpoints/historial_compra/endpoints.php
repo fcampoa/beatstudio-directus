@@ -193,7 +193,6 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
 
             try{
                 $tableGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
@@ -257,43 +256,13 @@ return [
                     }
                 }
                 
-                $current_date = date("Y-m-d");
-                $whereClient = new Zend\Db\Sql\Where;
-                $wherePayment = new Zend\Db\Sql\Where;
-                
-                $clientGateway = new \Zend\Db\TableGateway\TableGateway('cliente', $dbConnection);
-
-                $whereClient->equalTo('id', (int)$params["cliente"]);
-
-
-                $client = $clientGateway->select($whereClient);
-                $clientResult = $client->current();
-               
-           
-
                 foreach($aux3 as $a) {
                    
                     $rows= $tableGateway->update(
                         array("creditos" => $a["cantidad"]),
                         array("id" => $a["paquete"])
                     );
-                    $wherePayment->greaterThanOrEqualTo('vigencia', date('Y-m-d', strtotime($current_date)));
-                    $wherePayment->equalTo('cliente', (int)$params["cliente"]);
-                    $payments = $tableGateway->select($wherePayment);
-                    $credits = 0;
-                    foreach ($payments as $cu) {
-                        $credits = $credits + $cu["creditos"];
-                    }
-                    $activityGateway->insert(array(
-                        'collection' => 'historial_compra',
-                        'action' => 'update',
-                        'action_by' => $params["cliente"] | 0,
-                        'item' => $a["paquete"],
-                        'comment' => $clientResult['nombre'].' '.$clientResult['apellido']. ' canceló una reservación y se devolvió un credito al paquete '.$a["paquete"]. '. Total de creditos: '. $credits,
-                        'action_on' => DateTimeUtils::now()->toString(),
-                        'ip' => \Directus\get_request_host(),
-                        'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
-                    ));
+                   
                 }
                 if ($rows > 0) {
                     $res = true;
