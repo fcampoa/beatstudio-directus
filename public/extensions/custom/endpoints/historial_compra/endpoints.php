@@ -186,14 +186,17 @@ return [
             }
         }
     ],
-     '/regresar-creditos' => [
+    
+    '/regresar-creditos' => [
         'method' => 'PATCH',
         'handler' => function (Request $request, Response $response) {
             $body = $request->getParsedBody();
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-
+            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
+            $clientGateway = new \Zend\Db\TableGateway\TableGateway('cliente', $dbConnection);
+            $current_date = date("Y-m-d");
             try{
                 $tableGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
 
@@ -257,17 +260,38 @@ return [
                 }
                 
                 foreach($aux3 as $a) {
-                   
                     $rows= $tableGateway->update(
                         array("creditos" => $a["cantidad"]),
                         array("id" => $a["paquete"])
                     );
-                   
+                    $whereClient = new Zend\Db\Sql\Where;
+                    $whereClient->equalTo('id', (int)$params["cliente"]);
+                    $client = $clientGateway->select($whereClient);
+                    $clientResult = $client->current();
+                    $where->greaterThanOrEqualTo('vigencia', date('Y-m-d', strtotime($current_date)));
+                    $where->equalTo('cliente', (int)$params["cliente"]);
+                    $payments = $tableGateway->select($where);
+                    $credits = 0;
+                
+                    foreach ($payments as $cu) {
+                        $credits = $credits + $cu["creditos"];
+                    }
+
+                    $activityGateway->insert(array(
+                        'collection' => 'historial_compra',
+                        'action' => 'update',
+                        'action_by' => $params["cliente"] | 0,
+                        'item' => $a["paquete"],
+                        'comment' =>  $clientResult['nombre'].' '.$clientResult['apellido']. ' canceló la reservación de '.$body["horario"]["disciplina"]["nombre"].' del día '.$body["horario"]["fecha"].' para '.$body["reservacion"]['total_personas'].' persona (s) - se devolvió 1 credito al paquete ' . $a["paquete"]. '. Total de creditos: '. $credits,                       
+                        'action_on' => DateTimeUtils::now()->toString(),
+                        'ip' => \Directus\get_request_host(),
+                        'edited_on' => "creditos ",
+                        'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
+                    ));
                 }
                 if ($rows > 0) {
                     $res = true;
                 }
-                
                 return $response->withJson(['resultado' => $aux3, 'aux' => $aux]);
             }
             catch(Throwable  $e){
@@ -280,7 +304,7 @@ return [
                 $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error al regresar creditos", $message, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $message, $headers);
                 $errorGateway->insert(array(
                     "cliente" => $params['cliente'] ? $params['cliente'] : "No recibido",
                     "status" => "published",
@@ -309,7 +333,7 @@ return [
                 
                 $body = $request->getParsedBody();
                 $historyGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
-
+                
                 $current_date = date("Y-m-d");
                 $whereClient = new Zend\Db\Sql\Where;
                 $wherePayment = new Zend\Db\Sql\Where;
@@ -356,6 +380,10 @@ return [
                 if(isset($body['vigencia_dias'] )){
                     $vigenciaString = $body['vigencia_dias'] ;
                 }
+                $historyGateway->update(
+                    array("vigencia" => date("Y-m-d", strtotime($current_date." + ".$vigenciaString ." days"))),
+                    array("id" => $body['id'])
+                );
 
                 $activityGateway->insert(array(
                     'collection' => 'historial_compra',
