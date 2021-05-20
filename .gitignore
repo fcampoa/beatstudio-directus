@@ -31,14 +31,16 @@ deploy.*
 /public/extensions/core/pages
 
 # Custom extensions
-/public/extensions/custom/*/*
+!/public/extensions/custom/*/*
 
 ##  Auth
-/public/extensions/custom/auth
+!/public/extensions/custom/auth
 
 ##  Endpoints
 !/public/extensions/custom/endpoints/_directory/
 !/public/extensions/custom/endpoints/_example.php
+!/public/extensions/custom/endpoints/*
+
 
 ##  Hashers
 !/public/extensions/custom/hashers/_CustomHasher.php
