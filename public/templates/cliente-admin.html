@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <style>
+        @font-face {
+            font-family: 'GT-America-Regular';
+            src: url('https://www.beatstudio.com.mx/assets/fonts/SharpGrotesk/Semibold/SharpGroteskSmBold08-Regular.ttf') format('truetype');
+        }
+        
+        body {
+            background-color: #eee;
+            min-width: 600px;
+        }
+        
+        .email-content {
+            width: 500px;
+            background-image: url('https://www.beatstudio.com.mx/assets/img/correos/Correo_Imagen.jpg');
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        
+        .email-content span {
+            font-weight: bold;
+        }
+        
+        .email-content .logo {
+            width: 100%;
+        }
+        
+        .table-title {
+            font-weight: bold;
+            color: rgb(73, 73, 73);
+        }
+        
+        .socials {
+            width: 20px;
+            margin: 10px;
+        }
+        
+        .socials>img {
+            width: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="row justify-content-center my-5">
+        <div class="email-content p-5">
+            <div class="row">
+                <div class="col-6">
+                    <img class="logo" src="https://www.beatstudio.com.mx/assets/img/correos/BeatStudio_Logo-01.svg" alt="BeatStudio">
+                </div>
+                <div class="col-6 d-flex justify-content-end">
+                    <!-- <span class="align-self-center">14 de Octubre del 2020</span> -->
+                </div>
+                <div class="col-12">
+                    <h1 class="text-center mt-5">Nuevo Registro de Usuario</h1>
+                    <p class="mt-5">
+                        Nombre: <span>{{ nombre }}</span><br> Apellido: <span>{{ apellido }}</span><br> Correo: <span>{{ correo }}</span>
+                    </p>
+                </div>
+            </div>
+            <div class="row mt-5" style="border-top: 1px solid #000">
+                <div class="col-12  mt-4 d-flex justify-content-center">
+                    <a class="socials" href="https://www.instagram.com/beatstudiomx/" target="_blank">
+                        <img src="https://www.beatstudio.com.mx/assets/img/SVG/Instagram(Layout%20contacto).svg" alt="">
+                    </a>
+                    <a class="socials" href="https://www.instagram.com/beatstudiomx/" target="_blank">
+                        <img src="https://www.beatstudio.com.mx/assets/img/SVG/Twitter(Layout%20contacto).svg" alt="">
+                    </a>
+                    <a class="socials" href="https://www.instagram.com/beatstudiomx/" target="_blank">
+                        <img src="https://www.beatstudio.com.mx/assets/img/SVG/Facebook(Layout%20contacto9.svg" alt="">
+                    </a>
+                </div>
+                <div class="col-12 text-center">
+                    Copyright 2020 BeatStudio. Todos los derechos reservados.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
