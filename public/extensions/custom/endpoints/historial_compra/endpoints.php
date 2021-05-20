@@ -26,7 +26,6 @@ return [
                         if(!isset($params['cliente']))
                             throw new Exception("No se recibió el parametro cliente");
                     }
-                    
 
                     $where = new Zend\Db\Sql\Where;
                     // $where->between('vigencia', $params['desde'], $params['hasta']);
@@ -37,7 +36,6 @@ return [
                     foreach ($select as $valor) {
                         $creditos += $valor['creditos'];
                     }
-
                     return $response->withJson([
                         'creditos' => $creditos,
                         'message' => "Success"
@@ -53,10 +51,9 @@ return [
                     $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                     $message.= '</div>';
                     
-                    $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error consulta de historial", $message, $headers);
+                    $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error consulta de historial", $e->getMessage(), $headers);
                     $errorGateway->insert(array(
                         "cliente" => $params['cliente'],
-                        "status" => "published",
                         "error" => $e->getMessage(),
                         "seccion" => "Consulta de historial",
                         "notified" => $notified ? "Sí" : "No",
@@ -93,7 +90,7 @@ return [
                 $where->greaterThanOrEqualTo('vigencia', $params['desde']);
                 $where->equalTo('cliente', $params['cliente']);
                 $select = $tableGateway->select($where);            
-                $creditos = $params['creditos'] ;
+                $creditos = $params['creditos'] | 0;
 
                 $aux = array();
                 $aux2 = array();
@@ -143,7 +140,6 @@ return [
                 }
 
                 foreach ($aux as $a) {
-                    
                     $id = $tableGateway->update(
                         array("creditos" => $a["creditos"]),
                         array("id" => $a["id"])
@@ -169,10 +165,9 @@ return [
                 $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en actualizar creditos", $message, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en actualizar creditos", $e->getMessage(), $headers);
                 $errorGateway->insert(array(
-                    "cliente" => $params['cliente'] ? $params['cliente'] : 0,
-                    "status" => "published",
+                    "cliente" => $params['cliente'],
                     "error" => $e->getMessage(),
                     "seccion" => "Actualizar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -186,17 +181,13 @@ return [
             }
         }
     ],
-    
-    '/regresar-creditos' => [
+     '/regresar-creditos' => [
         'method' => 'PATCH',
         'handler' => function (Request $request, Response $response) {
             $body = $request->getParsedBody();
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
-            $clientGateway = new \Zend\Db\TableGateway\TableGateway('cliente', $dbConnection);
-            $current_date = date("Y-m-d");
             try{
                 $tableGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
 
@@ -230,6 +221,10 @@ return [
                 $where->equalTo('cliente', $params['cliente']);
                 $totales = $body["creditos"];
                 $select = $tableGateway->select($where);
+                $creditos = $params['creditos'];
+                $total = 0;
+                $res = false;
+                $size = count($select);
                 $aux = array();
                 $aux2 = array();
                 $aux3 = array();
@@ -304,122 +299,9 @@ return [
                 $message.= '<p class="mt-5"> Error: '.$e->getMessage();
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $message, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $e->getMessage(), $headers);
                 $errorGateway->insert(array(
                     "cliente" => $params['cliente'] ? $params['cliente'] : "No recibido",
-                    "status" => "published",
-                    "error" => $e->getMessage(),
-                    "seccion" => "Regresar creditos",
-                    "notified" => $notified ? "Sí" : "No",
-                    "created_on" =>  date('Y-m-d H:i:s')
-                ));
-                
-                return $response->withJson([
-                    'message' => $e->getMessage()
-                ]);
-
-            }
-        }
-    ],
-    
-    '/updateHistory' => [
-        'method' => 'POST',
-        'handler' => function (Request $request, Response $response) {
-            $container = \Directus\Application\Application::getInstance()->getContainer();
-            $dbConnection = $container->get('database');
-            $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-            $activityGateway = new \Zend\Db\TableGateway\TableGateway('transaction_activity', $dbConnection);
-            try{
-                
-                $body = $request->getParsedBody();
-                $historyGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
-                
-                $current_date = date("Y-m-d");
-                $whereClient = new Zend\Db\Sql\Where;
-                $wherePayment = new Zend\Db\Sql\Where;
-                
-                $clientGateway = new \Zend\Db\TableGateway\TableGateway('cliente', $dbConnection);
-                $paymentsGateway = new \Zend\Db\TableGateway\TableGateway('historial_compra', $dbConnection);
-
-                $whereClient->equalTo('id', (int)$body["cliente"]);
-
-                $client = $clientGateway->select($whereClient);
-                $clientResult = $client->current();
-
-                $wherePayment->greaterThanOrEqualTo('vigencia', date('Y-m-d', strtotime($current_date)));
-                $wherePayment->equalTo('cliente', (int)$body["cliente"]);
-                $payments = $paymentsGateway->select($wherePayment);
-                $credits = 0;
-
-                foreach ($payments as $cu) {
-                    $credits = $credits + $cu["creditos"];
-                }
-
-                if(!isset($body['vigencia_dias']))
-                {
-                    $headers = "MIME-Version: 1.0" . "\r\n";
-                    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                    $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
-                    $message= '<div class="col-12">';
-                    $message.= '<p class="mt-5"> Usuario: '.$body['cliente']? $body['cliente'] : "No recibido".'</p>';
-                    $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                    $message.= '<p class="mt-5"> Error: vigencia no recibida';
-                    $message.= '</div>';
-                    
-                    $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error al actualizar vigencia", $message, $headers);
-                    $errorGateway->insert(array(
-                        "cliente" => $body['cliente'],
-                        "status" => "published",
-                        "error" => "Vigencia no recibida en la compra: ".$body['id'],
-                        "seccion" => "Regresar creditos",
-                        "notified" => $notified ? "Sí" : "No",
-                        "created_on" =>  date('Y-m-d H:i:s')
-                    ));
-                }
-                $vigenciaString = "14";
-                if(isset($body['vigencia_dias'] )){
-                    $vigenciaString = $body['vigencia_dias'] ;
-                }
-                $historyGateway->update(
-                    array("vigencia" => date("Y-m-d", strtotime($current_date." + ".$vigenciaString ." days"))),
-                    array("id" => $body['id'])
-                );
-
-                $activityGateway->insert(array(
-                    'collection' => 'historial_compra',
-                    'action' => 'create',
-                    'action_by' => $body["cliente"] ? $body["cliente"] : 0,
-                    'item' => $body["id"] ? $body['id'] : 0,
-                    'comment' => $clientResult['nombre'].' '.$clientResult['apellido']. ' compró el paquete '.$body["paquete"].' por $'.$body["total"].' y vence el día '.date('Y-m-d', strtotime($current_date.'+ '.$vigenciaString.' days')).' con ID de compra '. $body['id']. '. Total de creditos: '.$credits,
-                    'action_on' => DateTimeUtils::now()->toString(),
-                    'ip' => \Directus\get_request_host(),
-                    'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : ''
-                ));
-                
-
-                $historyGateway->update(
-                    array("vigencia" => date("Y-m-d", strtotime($current_date." + ".$vigenciaString ." days"))),
-                    array("id" => $body['id'])
-                );
-                        
-                return $response->withJson([
-                    'message' => "Success"
-                ]);
-            }
-            catch(Throwable  $e){
-                $headers = "MIME-Version: 1.0" . "\r\n";
-                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
-                $message= '<div class="col-12">';
-                $message.= '<p class="mt-5"> Usuario: '.$request->id ? $request->id : "No recibido".'</p>';
-                $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$e->getMessage();
-                $message.= '</div>';
-                
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $message, $headers);
-                $errorGateway->insert(array(
-                    "cliente" => $body['id'] ? $body['id'] : 0,
-                    "status" => "published",
                     "error" => $e->getMessage(),
                     "seccion" => "Regresar creditos",
                     "notified" => $notified ? "Sí" : "No",
@@ -446,7 +328,6 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-            
 
             try {
                 $customer = \Conekta\Customer::create(
@@ -496,15 +377,14 @@ return [
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$error->message;
+                $message.= '<p class="mt-5"> Error: '.$error;
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en pago Conekta", $message, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $error, $headers);
                 
                 $errorGateway->insert(array(
-                    "cliente" => 0,
-                    "status" => "published",
-                    "error" => $cardData['client_name'].", error : ".$error->message,
+                    "cliente" => $cardData['client_name'],
+                    "error" => $error,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
@@ -520,19 +400,19 @@ return [
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$error->message;
+                $message.= '<p class="mt-5"> Error: '.$error;
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en pago Conekta", $message, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $error, $headers);
                 
                 $errorGateway->insert(array(
-                    "cliente" => 0,
-                    "status" => "published",
-                    "error" => $cardData['client_name'].", error : ".$error->message ,
+                    "cliente" => $cardData['client_name'],
+                    "error" => $error,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
                 ));
+                
                 return $response->withJson([
                     'error' => $error
                 ]);
@@ -543,15 +423,14 @@ return [
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
-                $message.= '<p class="mt-5"> Error: '.$error->message;
+                $message.= '<p class="mt-5"> Error: '.$error;
                 $message.= '</div>';
                 
-                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en pago Conekta", $message, $headers);
+                $notified = mail('jruiz@sahuarolabs.com, urosas@sahuarolabs.com', "Beatstudio error en regresar creditos", $error, $headers);
                 
                 $errorGateway->insert(array(
-                    "cliente" => 0,
-                    "status" => "published",
-                    "error" => $cardData['client_name'].", error : ".$error->message,
+                    "cliente" => $cardData['client_name'],
+                    "error" => $error,
                     "seccion" => "Pago Conekta",
                     "notified" => $notified ? "Sí" : "No",
                     "created_on" =>  date('Y-m-d H:i:s')
