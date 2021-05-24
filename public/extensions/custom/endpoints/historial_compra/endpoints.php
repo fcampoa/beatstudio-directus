@@ -438,8 +438,10 @@ return [
         'handler' => function (Request $request, Response $response) {
 
             $cardData = $request->getParsedBody();
-
+            // Producción
             \Conekta\Conekta::setApiKey("key_eR1iBWWHKV2MxkHqQH5VwA");
+            // sandbox
+            // \Conekta\Conekta::setApiKey("key_xmyFzCobeNWyZapsrR8hUQ");
             \Conekta\Conekta::setApiVersion("2.0.0");
             \Conekta\Conekta::setLocale('es');
             
