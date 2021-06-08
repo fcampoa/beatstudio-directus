@@ -18,7 +18,7 @@ package-lock.json
 deploy.*
 
 # Ignore configuration files
-/config/*
+!/config/*
 !/config/_example.php
 
 # PHPUnit
