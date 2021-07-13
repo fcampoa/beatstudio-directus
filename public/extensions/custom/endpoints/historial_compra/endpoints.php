@@ -44,7 +44,7 @@ return [
                 catch(Throwable  $e){
                     $headers = "MIME-Version: 1.0" . "\r\n";
                     $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                    $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                    $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
                     $message= '<div class="col-12">';
                     $message.= '<p class="mt-5"> Usuario: '.$params['cliente'] ? $params['cliente'] : "No recibido".'</p>';
                     $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
@@ -158,7 +158,7 @@ return [
             catch(Throwable  $e){
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$params['cliente'] ? $params['cliente'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
@@ -292,7 +292,7 @@ return [
             catch(Throwable  $e){
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$params['cliente'] ? $params['cliente'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
@@ -375,7 +375,7 @@ return [
             } catch (\Conekta\ProccessingError $error) {
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
@@ -398,7 +398,7 @@ return [
             } catch (\Conekta\ParameterValidationError $error) {
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');
@@ -421,7 +421,7 @@ return [
             } catch (\Conekta\Handler $error) {
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
                 $message= '<div class="col-12">';
                 $message.= '<p class="mt-5"> Usuario: '.$cardData['client_name'] ? $cardData['client_name'] : "No recibido".'</p>';
                 $message.= '<p class="mt-5"> Fecha: '.date('Y-m-d H:i:s');

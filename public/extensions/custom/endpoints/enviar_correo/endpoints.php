@@ -14,7 +14,7 @@ return [
             // $message .= 'Comienza a reservar tus clases www.beatstudio.com.mx';                    
             $headers = "MIME-Version: 1.0" . "\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+            $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
 
             $message = '<!DOCTYPE html>';
             $message.= '<html lang="en">';
@@ -123,7 +123,7 @@ return [
             $fecha = strtotime($paquete['vigencia']);
             $headers = "MIME-Version: 1.0" . "\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= 'From: BeatStudio<notify.beatstudio@gmail.com>' . "\r\n";
+            $headers .= 'From: BeatStudio<beatstudio.notify@gmail.com>' . "\r\n";
 
             // $message = "Haz realizado una compra en www.beatstudio.com.mx por " . $paquete["creditos"] . " créditos, ";
             // $message.= "por un total de $" . $paquete["precio"] . ", con vigencia de " . $paquete["vigenciaDias"];
@@ -403,7 +403,7 @@ return [
             
             $headers = "MIME-Version: 1.0" . "\r\n";
             $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-            $headers .= 'From: BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+            $headers .= 'From: BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
 
             mail($to, $subject, $message, $headers);
 
@@ -443,7 +443,7 @@ return [
                 $subject = 'Lugares disponibles';
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From: notify.beatstudio@gmail.com' . "\r\n";
+                $headers .= 'From: beatstudio.notify@gmail.com' . "\r\n";
 
                 $message = '<!DOCTYPE html>';
                 $message.= '<html lang="en">';
@@ -710,7 +710,7 @@ return [
                 // $message .= '<a href="https://www.beatstudio.com.mx/newpassword/' . $body["id"] . '"' .'> cambiar contraseña</a>';
                 $headers = "MIME-Version: 1.0" . "\r\n";
                 $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= 'From:BeatStudio <notify.beatstudio@gmail.com>' . "\r\n";
+                $headers .= 'From:BeatStudio <beatstudio.notify@gmail.com>' . "\r\n";
 
                 $message = '<!DOCTYPE html>';
                 $message.= '<html lang="en">';
