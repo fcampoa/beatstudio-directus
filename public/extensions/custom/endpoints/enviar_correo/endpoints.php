@@ -563,9 +563,13 @@ return [
             $container = \Directus\Application\Application::getInstance()->getContainer();
             $dbConnection = $container->get('database');
             $errorGateway = new \Zend\Db\TableGateway\TableGateway('errorlog', $dbConnection);
-
+            $tableGateway = new \Zend\Db\TableGateway\TableGateway('directus_users', $dbConnection);
             try {
                 $body = $request->getParsedBody();
+                // $res = $tableGateway->select(function(Select $select) {
+                //     $select->columns(array('id'));
+                //     $select->where('email', $body['email']);
+                // });
                 $to = $body["email"];
                 $subject = 'Cambio de contraseña';
                 $headers = "MIME-Version: 1.0" . "\r\n";
@@ -663,8 +667,9 @@ return [
                 $message.= '</html>';
 
                 mail($to, $subject, $message, $headers);
-                            return $response->withJson([
-                    'disciplina' => $message
+                            
+                return $response->withJson([
+                    'user' => $message
                 ]);
             }
             catch(Throwable  $e){
