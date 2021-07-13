@@ -7,7 +7,7 @@ return [
         'port' => 3306,
         'name' => 'beatstudio',
         'username' => 'root',
-        'password' => 'admin123',
+        'password' => 'B34tsp1n',
         'engine' => 'InnoDB',
         'charset' => 'utf8mb4',
         // Remove 'host' above when using sockets
