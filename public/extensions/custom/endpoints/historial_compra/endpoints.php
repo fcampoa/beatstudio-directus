@@ -33,12 +33,29 @@ return [
                     $where->equalTo('cliente', $params['cliente']);
                     $select = $tableGateway->select($where);
                     $creditos = 0;
-                    foreach ($select as $valor) {
+                    $ilimitados = false;
+                    $arr = array();
+                    foreach($select as $cu){
+                        array_push($arr, $cu);
+                    }
+                    $last = end($arr);
+                    $paqueteGateway = new \Zend\Db\TableGateway\TableGateway('paquete', $dbConnection);
+                    $w = new Zend\Db\Sql\Where;
+                    $w->equalTo('id', $last->paquete);
+                    $s = $paqueteGateway->select($w);
+                    foreach($s as $v) {
+                        if ($v->tipo === 'ilimitado') {
+                            $ilimitados = true;
+                        }
+                    }
+                    foreach ($arr as $valor) {
                         $creditos += $valor['creditos'];
                     }
                     return $response->withJson([
                         'creditos' => $creditos,
-                        'message' => "Success"
+                        'message' => "Success",
+                        'ilimitados' => $ilimitados,
+                        'vigencia' => $last->paquete
                     ]);
                 }
                 catch(Throwable  $e){
@@ -98,6 +115,24 @@ return [
                 foreach ($select as $cu) {
                     array_push($aux2, $cu);
                 }
+
+                $last = end($aux2);
+
+                $paqueteGateway = new \Zend\Db\TableGateway\TableGateway('paquete', $dbConnection);
+                $w = new Zend\Db\Sql\Where;
+                $w->equalTo('id', $last->paquete);
+                $s = $paqueteGateway->select($w);
+
+                foreach($s as $p) {                
+                    if ($p->tipo === 'ilimitado') {
+                    $res = true;
+                    $pid = $last->id;
+                    return $response->withJson([
+                        'resultado' => $res,
+                        'paquetes' => $pid                               
+                    ]);
+                }
+            }
 
                 do
                 {
@@ -232,6 +267,17 @@ return [
                     array_push($aux, $cu);
                 }
 
+                $last = end($aux);
+
+                $paqueteGateway = new \Zend\Db\TableGateway\TableGateway('paquete', $dbConnection);
+                $w = new Zend\Db\Sql\Where;
+                $w->equalTo('id', $last->paquete);
+                $s = $paqueteGateway->select($w);
+                foreach($s as $p) {
+                    if ($p->tipo === 'ilimitado') {
+                        return $response->withJson(['resultado' => true]);
+                    }
+                }
                 foreach($totales as $c) {
                     array_push($aux2, $c);
                 }
