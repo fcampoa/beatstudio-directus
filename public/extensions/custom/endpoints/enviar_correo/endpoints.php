@@ -139,10 +139,10 @@ return [
             // $adminMessage.= '</body>';
             // $adminMessage.= '</html>';
 
-            $adminMessage = "Nuevo usuario registro!! ";
-            //$adminMessage.= "nombre: " . $name . " ";
-            $adminMessage.= "correo: " . $to;
-            mail($toAdmin, $subject, $adminMessage, $headers)
+            // $adminMessage = "Nuevo usuario registro!! ";
+            // $adminMessage.= "nombre: " . $name . " ";
+            // $adminMessage.= "correo: " . $to;
+            // mail($toAdmin, $subject, $adminMessage, $headers)
 
             return $response->withJson([
                 'message' => $message
