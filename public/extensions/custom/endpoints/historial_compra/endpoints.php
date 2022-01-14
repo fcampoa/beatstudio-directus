@@ -124,7 +124,7 @@ return [
                 $s = $paqueteGateway->select($w);
 
                 foreach($s as $p) {                
-                    if ($p->tipo === 'ilimitado') {
+                    if (($p->tipo !== null) && ( strtolower($p->tipo) === 'ilimitado')) {
                     $res = true;
                     $pid = $last->id;
                     return $response->withJson([
