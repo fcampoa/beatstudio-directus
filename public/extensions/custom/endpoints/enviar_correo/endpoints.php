@@ -109,37 +109,40 @@ return [
 
             mail($to, $subject, $message, $headers);
 
-            // $toAdmin = "beatspinstudio@gmail.com";
-            // $adminMessage = '<!DOCTYPE html>';
-            // $adminMessage.= '<html lang="en">';
-            // $adminMessage.= '<head>';
-            // $adminMessage.= '<meta charset="UTF-8">';
-            // $adminMessage.= '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
-            // $adminMessage.= '<title>Document</title>';
-            // $adminMessage.= '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"';
-            // $adminMessage.= 'integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">';
-            // $adminMessage.='</style>';
-            // $adminMessage.= '</head>';
-            // $adminMessage.= '<body>';
-            // $adminMessage.= '<div class="row">';
-            // $adminMessage.= '<div class="col-12">';
-            // $adminMessage.= 'Nuevo usuario registrado';
-            // $adminMessage.= '</div>';
-            // $adminMessage.= '</div>';
-            // $adminMessage.= '<div class="row">'
-            // $adminMessage.= '<div class="col-12">';
-            // $adminMessage.= 'usuario: ' . $nombre;
-            // $adminMessage.= '</div>';
-            // $adminMessage.= '</div>';
-            // $adminMessage.= '<div class="row">'
-            // $adminMessage.= '<div class="col-12">';
-            // $adminMessage.= 'correo: ' . $to;
-            // $adminMessage.= '</div>';
-            // $adminMessage.= '</div>';
-            // $adminMessage.= '</body>';
-            // $adminMessage.= '</html>';
+            $toAdmin = "beatspinstudio@gmail.com";
+            $adminMessage = '<!DOCTYPE html>';
+            $adminMessage.= '<html lang="en">';
+            $adminMessage.= '<head>';
+            $adminMessage.= '<meta charset="UTF-8">';
+            $adminMessage.= '<meta name="viewport" content="width=device-width, initial-scale=1.0">';
+            $adminMessage.= '<title>Document</title>';
+            $adminMessage.= '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"';
+            $adminMessage.= 'integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">';
+            $adminMessage.='</style>';
+            $adminMessage.= '</head>';
+            $adminMessage.= '<body>';
+            $adminMessage.= '<div class="row">';
+            $adminMessage.= '<div class="col-12">';
+            $adminMessage.= 'Nuevo usuario registrado';
+            $adminMessage.= '</div>';
+            $adminMessage.= '</div>';
+            $adminMessage.= '<div class="row">'
+            $adminMessage.= '<div class="col-12">';
+            $adminMessage.= 'usuario: ' . $name;
+            $adminMessage.= '</div>';
+            $adminMessage.= '</div>';
+            $adminMessage.= '<div class="row">'
+            $adminMessage.= '<div class="col-12">';
+            $adminMessage.= 'correo: ' . $to;
+            $adminMessage.= '</div>';
+            $adminMessage.= '</div>';
+            $adminMessage.= '</body>';
+            $adminMessage.= '</html>';
 
-            // mail($toAdmin, $subject, $adminMessage, $headers)
+            // $adminMessage = "Nuevo usuario registro!!" . "\r\n";
+            // $adminMessage.= "nombre: " . $name;
+
+            mail($toAdmin, $subject, $adminMessage, $headers)
 
             return $response->withJson([
                 'message' => $message
