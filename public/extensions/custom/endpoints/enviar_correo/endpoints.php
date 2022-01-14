@@ -140,7 +140,7 @@ return [
             // $adminMessage.= '</html>';
 
             $adminMessage = "Nuevo usuario registro!! ";
-            $adminMessage.= "nombre: " . $name . " ";
+            //$adminMessage.= "nombre: " . $name . " ";
             $adminMessage.= "correo: " . $to;
             mail($toAdmin, $subject, $adminMessage, $headers)
 
