@@ -5,7 +5,7 @@ return [
         'type' => 'mysql',
         'host' => 'localhost',
         'port' => 3306,
-        'name' => 'beatstudio',
+        'name' => 'beatstudio-test',
         'username' => 'root',
         'password' => 'B34tsp1n',
         'engine' => 'InnoDB',
