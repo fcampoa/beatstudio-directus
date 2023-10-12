@@ -17,7 +17,7 @@ $servername = "localhost";
 		$response[] = $row;
             }
              // echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["fecha_nacimiento"]. "<br>";
-             header('Content-Type: application/json; charset=utf-8');
+             header('Content-Type: application/json');
              echo json_encode($response);
         }
         else {
