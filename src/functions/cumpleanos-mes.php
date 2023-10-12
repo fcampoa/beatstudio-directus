@@ -4,6 +4,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST');
 
 header("Access-Control-Allow-Headers: X-Requested-With");
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {    // The request is using the POST method
+
 $servername = "localhost";
         $username = "root";
         $password = "B34tsp1n";
@@ -23,11 +25,12 @@ $servername = "localhost";
             }
              // echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["fecha_nacimiento"]. "<br>";
              header('Content-Type: application/json');
-             return json_encode($response);
+             echo json_encode($response);
         }
         else {
-            return "0 results";
+            echo "0 results";
           }
           $conn->close();
           exit;
+        }
 ?>
