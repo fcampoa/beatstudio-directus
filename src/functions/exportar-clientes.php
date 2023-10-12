@@ -1,30 +1,5 @@
 <?php
-
-use Directus\Application\Http\Request;
-use Directus\Application\Http\Response;
-
-return [
-//    '/cumpleanos-mes' => [
-//     'method' => 'GET',
-//     'handler' => function (Request $request, Response $response) {
-//         $sql = "SELECT id, firstname, lastname FROM MyGuests";
-//         $result = $conn->query($sql);
-        
-//         if ($result->num_rows > 0) {
-//           // output data of each row
-//           while($row = $result->fetch_assoc()) {
-//             echo "id: " . $row["id"]. " - Name: " . $row["firstname"]. " " . $row["lastname"]. "<br>";
-//           }
-//         } else {
-//           echo "0 results";
-//         }
-//         $conn->close();
-//     }
-// ],
-    '/exportar-clientes' => [
-    'method' => 'GET',
-    'handler' => function (Request $request, Response $response) {
-        $servername = "localhost";
+$servername = "localhost";
         $username = "root";
         $password = "B34tsp1n";
         $database = "beatstudio-test";
@@ -59,6 +34,6 @@ return [
           echo "0 results";
         }
         exit;
-    }
-]
-];
+       
+       ?>
+    
