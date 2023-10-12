@@ -23,10 +23,10 @@ $servername = "localhost";
             }
              // echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["fecha_nacimiento"]. "<br>";
              header('Content-Type: application/json');
-             echo json_encode($response);
+             return json_encode($response);
         }
         else {
-            echo "0 results";
+            return "0 results";
           }
           $conn->close();
           exit;
