@@ -14,7 +14,7 @@ $servername = "localhost";
         if ($result->num_rows > 0) {
              // echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["fecha_nacimiento"]. "<br>";
              header('Content-Type: application/json; charset=utf-8');
-             echo json_encode($result->fetch_assoc());
+             echo json_encode(pg_fetch_assoc($result));
         }
         else {
             echo "0 results";
