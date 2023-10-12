@@ -1,8 +1,8 @@
 <?php
-header("Content-Type: application/vnd.ms-excel");
-header("Content-Disposition: attachment; filename=clientes.xls");
-header("Pragma: no-cache");
-header("Expires: 0")
+// header("Content-Type: application/vnd.ms-excel");
+// header("Content-Disposition: attachment; filename=clientes.xls");
+// header("Pragma: no-cache");
+// header("Expires: 0")
 
 $servername = "localhost";
         $username = "root";
