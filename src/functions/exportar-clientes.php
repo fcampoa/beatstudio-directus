@@ -15,24 +15,24 @@ $servername = "localhost";
         if ($result->num_rows > 0) {
             $clientes = array();
           while($row = $result->fetch_assoc()) {
-            // echo "id: " . $row["id"]. " - Name: " . $row["firstname"]. " " . $row["lastname"]. "<br>";
-            $clientes[] = $row;
+             echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["correo"]. "<br>";
+           //  $clientes[] = $row;
           }
-          $conn->close();
-          header("Content-Type: application/vnd.ms-excel");
-          header("Content-Disposition: attachment; filename=clientes.xls");
+        //   header("Content-Type: application/vnd.ms-excel");
+        //   header("Content-Disposition: attachment; filename=clientes.xls");
 
-          $mostrar_columnas = false;
-          foreach($clientes as $cliente) {
-            if(!$mostrar_columnas) {
-                echo_implode("\t", array_keys($cliente)) . "\n";
-                $mostrar_columnas = true;
-            }
-            echo_implode("\t", array_values($cliente)) . "\n";
-          }
+        //   $mostrar_columnas = false;
+        //   foreach($clientes as $cliente) {
+        //     if(!$mostrar_columnas) {
+        //         echo_implode("\t", array_keys($cliente)) . "\n";
+        //         $mostrar_columnas = true;
+        //     }
+        //     echo_implode("\t", array_values($cliente)) . "\n";
+        //   }
         } else {
           echo "0 results";
         }
+        $conn->close();
         exit;
        
        ?>
