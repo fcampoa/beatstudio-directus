@@ -1,4 +1,9 @@
 <?php
+header('Access-Control-Allow-Origin: *');
+
+header('Access-Control-Allow-Methods: GET, POST');
+
+header("Access-Control-Allow-Headers: X-Requested-With");
 $servername = "localhost";
         $username = "root";
         $password = "B34tsp1n";
@@ -17,7 +22,7 @@ $servername = "localhost";
 		$response[] = $row;
             }
              // echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["fecha_nacimiento"]. "<br>";
-             header('Content-Type: application/json; charset=utf-8');
+             header('Content-Type: application/json');
              echo json_encode($response);
         }
         else {
