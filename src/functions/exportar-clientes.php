@@ -13,47 +13,36 @@ $servername = "localhost";
         if($conn->connect_error) {
             die("connection failed: " . $conn->connect_error);
         }
+        $table = "";
 
         $sql = "SELECT nombre, apellido, correo FROM cliente";
         $result = $conn->query($sql);
-        //$output "test";
         if ($result->num_rows > 0) {
-        //    $output.= "
-        //    <table>
-        //        <thead>
-        //            <tr>
-        //                <th>nombre</th>
-        //                <th>apellido</th>
-        //                <th>correo</th>
-        //            </tr>
-        //        </thead>
-        //        <tbody> 
-        //    ";
+
+            $table .= "<table>";
+            $table .= "<thead>";
+            $table .= "<tr>";
+            $table .= "<th>nombre</th>";
+            $table .= "<th>apellido</th>";
+            $table .= "<th>correo</th>";
+            $table .= "</tr>";
+            $table .= "</thead>";
+            $table .= "<tbody>";
+
             $clientes = array();
           while($row = $result->fetch_assoc()) {
-            echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["correo"]. "<br>";
-           //  $clientes[] = $row;
-          // $output .= "
-          // <tr>
-          //  <td>" . $row["nombre"] . "</td>
-          // <td>" . $row["apellido"] . "</td>
-          //  <td>" . $row["correo"] . "</td>
-          // ";
+          //  echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["correo"]. "<br>";
+          $table .= "<tr>";
+          $table .= "<td>" . $row["nombre"] . "</td>";
+          $table .= "<td>" . $row["apellido"] . "</td>";
+          $table .= "<td>" . $row["correo"] . "</td>";
+          $table .= "</tr>";
           }
-         // $output .= "
-         // </tbody>
-         // </table>
-         // ";
-          echo $output;
 
-        //   $mostrar_columnas = false;
-        //   foreach($clientes as $cliente) {
-        //     if(!$mostrar_columnas) {
-        //         echo_implode("\t", array_keys($cliente)) . "\n";
-        //         $mostrar_columnas = true;
-        //     }
-        //     echo_implode("\t", array_values($cliente)) . "\n";
-        //   }
+          $table .= "</tbody>";
+          $table .= "</table>";
+
+          echo $table;
         } else {
           echo "0 results";
         }
