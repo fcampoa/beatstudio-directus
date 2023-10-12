@@ -1,4 +1,9 @@
 <?php
+header("Content-Type: application/vnd.ms-excel");
+header("Content-Disposition: attachment; filename=clientes.xls");
+header("Pragma: no-cache");
+header("Expires: 0")
+
 $servername = "localhost";
         $username = "root";
         $password = "B34tsp1n";
@@ -11,15 +16,35 @@ $servername = "localhost";
 
         $sql = "SELECT nombre, apellido, correo FROM cliente";
         $result = $conn->query($sql);
-        
+        $output "";        
         if ($result->num_rows > 0) {
+            $output.= "
+            <table>
+                <thead>
+                    <tr>
+                        <th>nombre</th>
+                        <th>apellido</th>
+                        <th>correo</th>
+                    </tr>
+                </thead>
+                <tbody> 
+            ";
             $clientes = array();
           while($row = $result->fetch_assoc()) {
-             echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["correo"]. "<br>";
+           //  echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["correo"]. "<br>";
            //  $clientes[] = $row;
+           $output .= "
+           <tr>
+            <td>" . $row["nombre"] . "</td>
+            <td>" . $row["apellido"] . "</td>
+            <td>" . $row["correo"] . "</td>
+           ";
           }
-        //   header("Content-Type: application/vnd.ms-excel");
-        //   header("Content-Disposition: attachment; filename=clientes.xls");
+          $output .= "
+          </tbody>
+          </table>
+          ";
+          echo $output;
 
         //   $mostrar_columnas = false;
         //   foreach($clientes as $cliente) {
