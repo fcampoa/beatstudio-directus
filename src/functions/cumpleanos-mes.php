@@ -14,10 +14,10 @@ $servername = "localhost";
         $response = Array();
         if ($result->num_rows > 0) {
             while($row = $result->fetch_assoc()) {
-                $cliente = {};
-                $cliente["nombre"] = $row["nombre"];
-                $cliente["apellido"] = $row["apellido"];
-                $cliente["cumpleanos"] = $row["fecha_nacimiento"];
+                $cliente = new StdClass();
+                $cliente->nombre = $row["nombre"];
+                $cliente->apellido = $row["apellido"];
+                $cliente->cumpleanos = $row["fecha_nacimiento"];
                 array_push($response, $cliente)
             }
              // echo "nombre: " . $row["nombre"]. " - apellido: " . $row["apellido"]. " " . $row["fecha_nacimiento"]. "<br>";
