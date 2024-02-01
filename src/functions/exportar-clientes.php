@@ -15,7 +15,11 @@ $servername = "localhost";
         }
         $table = "";
 
-        $sql = "SELECT nombre, apellido, correo FROM cliente";
+        $sql = "SELECT nombre, apellido, correo, fecha_nacimiento,
+        (select count(*) from reservacion where cliente = c.id) as totalReservaciones,
+        (select fecha from reservacion where fecha < curdate() and cliente = c.id order by fecha desc limit 1) as ultimaReservacion,
+        (select fecha from reservacion where fecha >= curdate() and cliente = c.id order by fecha desc limit 1) as proximaReservacion
+         FROM cliente c;";
         $result = $conn->query($sql);
         if ($result->num_rows > 0) {
 
