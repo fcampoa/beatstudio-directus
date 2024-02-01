@@ -29,6 +29,9 @@ $servername = "localhost";
             $table .= "<th>nombre</th>";
             $table .= "<th>apellido</th>";
             $table .= "<th>correo</th>";
+            $table .= "<th>fecha nacimiento</th>";
+            $table .= "<th>ultima reservacion</th>";
+            $tablr .= "<th>proxima reservacion</th>";
             $table .= "</tr>";
             $table .= "</thead>";
             $table .= "<tbody>";
@@ -40,6 +43,9 @@ $servername = "localhost";
           $table .= "<td>" . $row["nombre"] . "</td>";
           $table .= "<td>" . $row["apellido"] . "</td>";
           $table .= "<td>" . $row["correo"] . "</td>";
+          $table .= "<td>" . $row["fecha_nacimiento"] . "</td>";
+          $table .= "<td>" . $row["ultimaReservacion"] . "</td>";
+          $table .= "<td>" . $row["proximaReservacion"] . "</td>";
           $table .= "</tr>";
           }
 
