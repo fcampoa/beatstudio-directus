@@ -18,7 +18,7 @@ $servername = "localhost";
         $sql = "select c.nombre, c.apellido, c.correo, c.fecha_nacimiento,
         count(r.fecha) as totalReservaciones,
         max(if(r.fecha <= curdate(), r.fecha, null)) as ultimaReservacion,
-        max(if(r.fecha > curdate(), r.fecha, null)) as proximaReservacion
+        min(if(r.fecha > curdate(), r.fecha, null)) as proximaReservacion
         from cliente c left join reservacion r on c.id = r.cliente
         group by c.id;";
         $result = $conn->query($sql);
@@ -31,6 +31,7 @@ $servername = "localhost";
             $table .= "<th>apellido</th>";
             $table .= "<th>correo</th>";
             $table .= "<th>fecha nacimiento</th>";
+            $table .= "th>Total reservaciones</th>";
             $table .= "<th>ultima reservacion</th>";
             $tablr .= "<th>proxima reservacion</th>";
             $table .= "</tr>";
@@ -45,6 +46,7 @@ $servername = "localhost";
           $table .= "<td>" . $row["apellido"] . "</td>";
           $table .= "<td>" . $row["correo"] . "</td>";
           $table .= "<td>" . $row["fecha_nacimiento"] . "</td>";
+          $table .= "<td>" . $row["totalReservaciones"] . "</td>";
           $table .= "<td>" . $row["ultimaReservacion"] . "</td>";
           $table .= "<td>" . $row["proximaReservacion"] . "</td>";
           $table .= "</tr>";
